@@ -39,16 +39,18 @@ def getpixels(imageFile):
 # print(output)
 
 
-def generateDataFile(dirName):
+def generateDataFile(dirName, startIndex):
     for root, dirs, files in os.walk("./"+dirName):
         imageDataArray = [None] * len(files)
         for filename in files:
             pixels = getpixels(os.path.join(root, filename))
             match = re.search(r"(\d*)", filename)
-            index = int(match.group(0))
+            index = int(match.group(0)) - startIndex
             imageDataArray[index] = pixels
         np.save("./output/" + dirName, np.array(imageDataArray))
 
 
-generateDataFile('testSet')
-generateDataFile('trainingSet')
+generateDataFile('testSet', 300)
+generateDataFile('testSetLabels', 300)
+generateDataFile('trainingSet', 0)
+generateDataFile('trainingSetLabels', 0)
