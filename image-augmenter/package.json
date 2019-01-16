@@ -1,0 +1,11 @@
+{
+  "name": "image-augmenter",
+  "version": "1.0.0",
+  "main": "main",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^10.12.18",
+    "@types/sharp": "^0.21.0",
+    "sharp": "^0.21.2"
+  }
+}
