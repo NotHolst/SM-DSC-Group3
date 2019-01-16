@@ -1,12 +1,12 @@
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, ZeroPadding2D, Layer
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, UpSampling2D
+from keras.layers import Dense, Dropout, Flatten, ZeroPadding2D, Layer, Permute, Activation
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, UpSampling2D, Reshape
 import numpy as np
 
 
-batch_size = 128
+batch_size = 30
 num_classes = 10
 epochs = 12
 
@@ -33,7 +33,7 @@ model = Sequential()
 # Encoding Start
 model.add(ZeroPadding2D(padding=(1, 1)))
 model.add(Conv2D(64, kernel_size=(3, 3),
-                 activation="relu", input_shape=(227, 227, 3), padding="valid"))
+                 activation="relu", input_shape=(226, 226, 3), padding="valid"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -71,7 +71,13 @@ model.add(ZeroPadding2D(padding=(2, 2)))
 model.add(Conv2D(64, kernel_size=(3, 3), activation="relu", padding="valid"))
 model.add(BatchNormalization())
 
-model.add(Conv2D(3, kernel_size=(1, 1)))
+model.add(Conv2D(3, kernel_size=(1, 1), padding="valid"))
+
+# model.add(Reshape((3, model.output_shape[-2]*model.output_shape[-1]),
+#                   input_shape=(3, model.output_shape[-2]*model.output_shape[-1])))
+# model.add(Permute((2, 1)))
+
+model.add(Activation('softmax'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
@@ -85,3 +91,5 @@ model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+model.save('./savedModels/test.h5', True)
