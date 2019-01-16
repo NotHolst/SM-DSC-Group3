@@ -42,7 +42,7 @@ for (let i = 0; i < inputFilesNoMasks.length; i++) {
   let file = path.join(INPUT_DIR, filename);
 
   const fileNumber = /(\d*).jpg/.exec(filename);
-  const maskRegex = new RegExp(fileNumber[1] + "_mask.jpg");
+  const maskRegex = new RegExp(fileNumber[1] + "_mask.png", "i");
   let maskFile = path.join(INPUT_DIR, inputFiles.find(x => maskRegex.test(x)));
 
   augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 0);
@@ -55,13 +55,13 @@ for (let i = 0; i < inputFilesNoMasks.length; i++) {
   augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 270);
 
   augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 0, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, ++outputIndex + ".png"), 0, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 0, true);
   augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 90, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, ++outputIndex + ".png"), 90, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 90, true);
   augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 180, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, ++outputIndex + ".png"), 180, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 180, true);
   augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 270, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, ++outputIndex + ".png"), 270, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 270, true);
   
 
 }
