@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const _ = require('lodash')
+
 
 const INPUT_DIR = path.resolve("./input");
 const OUTPUT_IMAGES = path.resolve("./output_images");
@@ -30,12 +32,20 @@ function augmentImage(input, outputFile, rotation = 0, flipX = false) {
 }
 
 const inputFiles = fs.readdirSync(INPUT_DIR);
-let outputIndex = 0;
+
+let outputIndex = -1;
 
 const inputFilesNoMasks = inputFiles.filter(filename => {
   const regex = /^(\d)*\.jpg$/;
   return regex.test(filename);
 });
+
+
+let randomNumbers = new Array(400)
+  for(let j = 0; j < randomNumbers.length; j++){
+    randomNumbers[j] = j
+  }
+  randomNumbers = _.shuffle(randomNumbers)
 
 for (let i = 0; i < inputFilesNoMasks.length; i++) {
   let filename = inputFilesNoMasks[i];
@@ -43,25 +53,28 @@ for (let i = 0; i < inputFilesNoMasks.length; i++) {
 
   const fileNumber = /(\d*).jpg/.exec(filename);
   const maskRegex = new RegExp(fileNumber[1] + "_mask.png", "i");
+  
   let maskFile = path.join(INPUT_DIR, inputFiles.find(x => maskRegex.test(x)));
 
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 0);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 0);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 90);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 90);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 180);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 180);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 270);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 270);
 
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 0, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 0, true);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 90, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 90, true);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 180, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 180, true);
-  augmentImage(file, path.join(OUTPUT_IMAGES, ++outputIndex + ".jpg"), 270, true);
-  augmentImage(maskFile, path.join(OUTPUT_MASKS, outputIndex + ".png"), 270, true);
+
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 0);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 0);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 90);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 90);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 180);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 180);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 270);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 270);
+
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 0, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 0, true);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 90, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 90, true);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 180, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 180, true);
+  augmentImage(file, path.join(OUTPUT_IMAGES, randomNumbers[++outputIndex] + ".jpg"), 270, true);
+  augmentImage(maskFile, path.join(OUTPUT_MASKS, randomNumbers[outputIndex] + ".png"), 270, true);
   
 
 }
