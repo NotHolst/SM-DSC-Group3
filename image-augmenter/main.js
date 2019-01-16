@@ -28,6 +28,9 @@ function augmentImage(input, outputFile, rotation = 0, flipX = false) {
   image.rotate(rotation);
   image.flop(flipX);
 
+  image.resize(226,226,{
+    kernel: "nearest"
+  })
   image.toFile(outputFile);
 }
 
