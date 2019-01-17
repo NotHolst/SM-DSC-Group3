@@ -2,7 +2,7 @@ from keras.models import load_model
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
-
+def clamp(n, smallest, largest): return max(smallest, min(n, largest))
 
 x_test = np.load('./output/testSet.npy')
 x_testMasks = np.load('./output/testSetLabels.npy')
@@ -14,40 +14,61 @@ model = load_model('./Models/Model2/model.h5')
 
 res = model.predict(x_test)
 
-
-
 def drawImages(page, perPage):
+    imageAxes = []
     col = 1
     for index in range(page*perPage, page*perPage + perPage):
         image = res[index]
         plt.subplot(3, perPage, col)
-        plt.imshow(image)
+        imageAxes.append(plt.imshow(x_testMasks[index]))
         plt.subplot(3, perPage, col+perPage)
-        plt.imshow(x_test[index])
+        imageAxes.append(plt.imshow(x_test[index]))
         plt.subplot(3, perPage, col+perPage*2)
-        plt.imshow(x_testMasks[index])
+        imageAxes.append(plt.imshow(image))
         col += 1
-        axnext = plt.axes([0.81, 0.05, 0.1, 0.075])
-        bnext = Button(axnext, 'Next')
+    return imageAxes
 
 class PageManager(object):
     page = 0
     perPage = 4
 
-    def next(self, event):
+    def __init__(self, fig):
+        self.fig = fig
+        fig.canvas.mpl_connect('key_press_event', self.keyPress)
+        self.pageCount = (len(res)/self.perPage)
+        print(self.pageCount)
+
+    def keyPress(self, event):
+        if event.key == 'right':
+            self.next()
+        if event.key == 'left':
+            self.prev()
+
+    def next(self):
         self.page += 1
-        drawImages(self.page, self.perPage)
+        self.page = int(clamp(self.page, 0, self.pageCount))
+        self.updateImages()
 
-    def prev(self, event):
-        self.page += 1
+    def prev(self):
+        self.page -= 1
+        self.page = int(clamp(self.page, 0, self.pageCount))
+        self.updateImages()
+    
+    def updateImages(self):
+        i = 0
+        for index in range(self.page*self.perPage, self.page*self.perPage + self.perPage):
+            image = res[index]
+            imageAxes[i].set_data(x_testMasks[index])
+            imageAxes[i+1].set_data(x_test[index])
+            imageAxes[i+2].set_data(image)
+            i+=3
+        self.fig.canvas.draw()
 
-pageManager = PageManager()
-axprev = plt.axes([0.7, 0.05, 0.1, 0.075])
-bprev = Button(axprev, 'Prev')
-bprev.on_clicked(pageManager.prev)
-axnext = plt.axes([0.81, 0.05, 0.1, 0.075])
-bnext = Button(axnext, 'Next')
-bnext.on_clicked(pageManager.next)
 
+fig = plt.figure()
+
+imageAxes = drawImages(0, 4)
+
+pageManager = PageManager(fig)
 plt.show()
 # print(model.summary())
