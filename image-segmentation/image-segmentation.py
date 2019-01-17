@@ -8,7 +8,7 @@ import numpy as np
 
 batch_size = 30
 num_classes = 10
-epochs = 12
+epochs = 128
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -92,4 +92,4 @@ score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-model.save('./savedModels/test.h5', True)
+model.save('./tmpModel/model.h5', True)
