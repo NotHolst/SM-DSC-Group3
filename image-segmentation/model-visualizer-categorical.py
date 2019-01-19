@@ -33,9 +33,7 @@ startImage = 20
 
 folders = (
     "Model7 Baseline",
-    "Model -  2 extra layers",
-    "Model - 2 less layers and half filters",
-    "Model - 2 inner Conv2d sigmoid"
+    "Model -  2 extra layers"
 )
 
 models = []
@@ -44,22 +42,6 @@ for folder in folders:
     res = model.predict(x_test)
     colorRemap(res)
     models.append(res)
-
-#model = load_model('./Models/Model7 Baseline/model.h5')
-#res = model.predict(x_test)
-#colorRemap(res)
-
-#model2 = load_model('./Models/Model -  2 extra layers/model.h5')
-#res2 = model2.predict(x_test)
-#colorRemap(res2)
-
-#model3 = load_model('./Models/Model - 2 less layers and half filters/model.h5')
-#res3 = model3.predict(x_test)
-#colorRemap(res3)
-
-#model4 = load_model('./Models/Model - 2 inner Conv2d sigmoid/model.h5')
-#res4 = model4.predict(x_test)
-#colorRemap(res4)
 
 rows = 2 + len(models)
 columns = 5
