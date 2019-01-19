@@ -3,12 +3,13 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, ZeroPadding2D, Layer, Permute, Activation
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, UpSampling2D, Reshape
+import matplotlib.pyplot as plt
 import numpy as np
 
 
-batch_size = 30
+batch_size = 32
 num_classes = 10
-epochs = 256
+epochs = 128
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -32,8 +33,13 @@ model = Sequential()
 
 # Encoding Start
 model.add(ZeroPadding2D(padding=(1, 1)))
-model.add(Conv2D(64, kernel_size=(3, 3),
+model.add(Conv2D(32, kernel_size=(3, 3),
                  activation="relu", input_shape=(226, 226, 3), padding="valid"))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+
+model.add(ZeroPadding2D(padding=(1, 1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation="relu", padding="valid"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -53,22 +59,27 @@ model.add(BatchNormalization())
 
 # Decoding Start
 model.add(ZeroPadding2D(padding=(1, 1)))
-model.add(Conv2D(512, kernel_size=(3, 3), activation="relu", padding="valid"))
+model.add(Conv2D(512, kernel_size=(3, 3), padding="valid"))
 model.add(BatchNormalization())
 
 model.add(UpSampling2D(size=(2, 2)))
 model.add(ZeroPadding2D(padding=(1, 1)))
-model.add(Conv2D(256, kernel_size=(3, 3), activation="relu", padding="valid"))
+model.add(Conv2D(256, kernel_size=(3, 3), padding="valid"))
 model.add(BatchNormalization())
 
 model.add(UpSampling2D(size=(2, 2)))
 model.add(ZeroPadding2D(padding=(1, 1)))
-model.add(Conv2D(128, kernel_size=(3, 3), activation="relu", padding="valid"))
+model.add(Conv2D(128, kernel_size=(3, 3), padding="valid"))
+model.add(BatchNormalization())
+
+model.add(UpSampling2D(size=(2, 2)))
+model.add(ZeroPadding2D(padding=(1, 1)))
+model.add(Conv2D(64, kernel_size=(3, 3), padding="valid"))
 model.add(BatchNormalization())
 
 model.add(UpSampling2D(size=(2, 2)))
 model.add(ZeroPadding2D(padding=(2, 2)))
-model.add(Conv2D(64, kernel_size=(3, 3), activation="relu", padding="valid"))
+model.add(Conv2D(32, kernel_size=(3, 3), padding="valid"))
 model.add(BatchNormalization())
 
 model.add(Conv2D(4, kernel_size=(1, 1), padding="valid"))
@@ -83,7 +94,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-model.fit(x_train, y_train,
+history = model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,
@@ -91,5 +102,23 @@ model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+# Plot training & validation accuracy values
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('Model accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+# Plot training & validation loss values
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
 
 model.save('./tmpModel/model.h5', True)
