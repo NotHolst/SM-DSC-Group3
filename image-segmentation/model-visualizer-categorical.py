@@ -67,8 +67,10 @@ columns = 5
 def drawImages(page, perPage):
     imageAxes = []
     col = 1
+    firstColumn = True
     for index in range(page*perPage, page*perPage + perPage):
         #Mask and image
+
         plt.subplot(rows, perPage, col)
         imageAxes.append(plt.imshow(x_testMasks[index]))
         plt.subplot(rows, perPage, col+perPage)
@@ -76,10 +78,15 @@ def drawImages(page, perPage):
 
         #Predictions
         for modelIndex in range(2, len(models)+2):
+            
            image = models[modelIndex-2][index]
            plt.subplot(rows, perPage, col+perPage*modelIndex)
+           if firstColumn:
+               yLabelName = folders[modelIndex - 2]
+               plt.ylabel(yLabelName, rotation=60, fontsize=8)
            imageAxes.append(plt.imshow(image))
-
+        if firstColumn:
+            firstColumn = False
         col += 1
     return imageAxes
 
