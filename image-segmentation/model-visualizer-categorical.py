@@ -26,32 +26,48 @@ x_test = np.load('./output/testSet.npy')
 x_testMasks = np.load('./output/testSetLabels_categorical.npy')
 colorRemap(x_testMasks)
 
+x_test = x_test[0:30]
 
 images = 6
 startImage = 20
 
-model = load_model('./Models/Model5/model.h5')
+folders = (
+    "Model7 Baseline",
+    "Model -  2 extra layers"
+)
 
-res = model.predict(x_test)
-colorRemap(res)
+models = []
+for folder in folders:
+    model = load_model('./Models/' + folder + '/model.h5')
+    res = model.predict(x_test)
+    colorRemap(res)
+    models.append(res)
+
+rows = 2 + len(models)
+columns = 5
 
 def drawImages(page, perPage):
     imageAxes = []
     col = 1
     for index in range(page*perPage, page*perPage + perPage):
-        image = res[index]
-        plt.subplot(3, perPage, col)
+        #Mask and image
+        plt.subplot(rows, perPage, col)
         imageAxes.append(plt.imshow(x_testMasks[index]))
-        plt.subplot(3, perPage, col+perPage)
+        plt.subplot(rows, perPage, col+perPage)
         imageAxes.append(plt.imshow(x_test[index]))
-        plt.subplot(3, perPage, col+perPage*2)
-        imageAxes.append(plt.imshow(image))
+
+        #Predictions
+        for modelIndex in range(2, len(models)+2):
+           image = models[modelIndex-2][index]
+           plt.subplot(rows, perPage, col+perPage*modelIndex)
+           imageAxes.append(plt.imshow(image))
+
         col += 1
     return imageAxes
 
 class PageManager(object):
     page = 0
-    perPage = 4
+    perPage = columns
 
     def __init__(self, fig):
         self.fig = fig
@@ -78,17 +94,22 @@ class PageManager(object):
     def updateImages(self):
         i = 0
         for index in range(self.page*self.perPage, self.page*self.perPage + self.perPage):
-            image = res[index]
+            
+            #Mask and image
             imageAxes[i].set_data(x_testMasks[index])
             imageAxes[i+1].set_data(x_test[index])
-            imageAxes[i+2].set_data(image)
-            i+=3
+
+            #Predictions
+            for modelIndex in range(0, len(models)):
+                image = models[modelIndex][index]
+                imageAxes[i+2+modelIndex].set_data(image)
+            i+= rows
+
         self.fig.canvas.draw()
 
 
 fig = plt.figure()
-
-imageAxes = drawImages(0, 4)
+imageAxes = drawImages(0, columns)
 
 pageManager = PageManager(fig)
 plt.show()
