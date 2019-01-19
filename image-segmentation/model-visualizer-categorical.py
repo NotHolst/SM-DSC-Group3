@@ -54,8 +54,12 @@ def drawImages(page, perPage):
         #Mask and image
 
         plt.subplot(rows, perPage, col)
+        if firstColumn:
+            plt.ylabel('Ground Truth', rotation=60, fontsize=8)
         imageAxes.append(plt.imshow(x_testMasks[index]))
         plt.subplot(rows, perPage, col+perPage)
+        if firstColumn:
+            plt.ylabel('Original image', rotation=60, fontsize=8)
         imageAxes.append(plt.imshow(x_test[index]))
 
         #Predictions
